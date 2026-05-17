@@ -17,6 +17,7 @@
     "path": "node_modules/cz-git"
   }
 },
+// 配置 lint-staged 规则, 可以通过 pnpm lint-staged 来执行
 // lint-staged 是一个工具，用于在提交代码之前对暂存区的文件进行检查和修复。
 // 它允许你在提交代码之前运行一些命令来检查代码质量、格式化代码或者执行其他的任务，以确保提交的代码符合项目的规范和要求。
 	"lint-staged": {

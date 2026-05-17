@@ -1,3 +1,4 @@
+commitlint
 ningzhi
 njsproj
 ntvs
