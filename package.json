@@ -6,8 +6,9 @@
     "main": "index.js",
     "scripts": {
         "dev": "pnpm dev:builder && pnpm dev:runner",
-        "dev:builder": "pnpm --filter builder dev",
-        "typecheck": "pnpm --filter builder typecheck",
+        "dev:builder": "pnpm --filter n-builder dev",
+        "dev:runner": "pnpm --filter runner dev",
+        "typecheck": "pnpm --filter n-builder typecheck",
         "lint:vue": "eslint --fix",
         "lint:style": "stylelint \"{packages,apps}/**/*.{css,scss,vue}\"",
         "lint": "pnpm lint:style",
