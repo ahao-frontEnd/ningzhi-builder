@@ -16,7 +16,9 @@
         "pinia": "3.0.4",
         "vue": "3.5.34",
         "vue-router": "5.0.7",
-        "@icon-park/vue-next": "1.4.2"
+        "@icon-park/vue-next": "1.4.2",
+        "nanoid": "5.0.7",
+        "smooth-dnd": "0.12.1"
     },
     "devDependencies": {
         "@playwright/test": "1.59.1",

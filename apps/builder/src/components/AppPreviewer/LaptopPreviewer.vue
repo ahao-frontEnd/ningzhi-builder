@@ -1,16 +1,16 @@
 <script setup lang="ts">
+import BlocksRenderer from '@/blocks/BlocksRenderer.vue'
+
 import PreviewModeSwitcher from './PreviewModeSwitcher.vue'
 import type { PreviewType } from './type'
-
 const props = defineProps<{
-    previewMode: PreviewType
+    previewMode?: PreviewType
 }>()
-
 const emit = defineEmits<{
     'preview-mode-change': [mode: PreviewType]
 }>()
 
-const greet = (mode: PreviewType) => {
+function greet(mode: PreviewType) {
     emit('preview-mode-change', mode)
 }
 </script>
@@ -19,16 +19,18 @@ const greet = (mode: PreviewType) => {
     <div class="layout-runner" style="--container-bg-color: #3d6583">
         <div class="layout-runner-navigator">
             <div></div>
-            <div class="address-wrapper">https://ningzhiEdu.com/path/to/yoursite</div>
+            <div class="address-wrapper">https://ningzhiBuilder.com/path/to/yoursite</div>
 
             <PreviewModeSwitcher :preview-mode="props.previewMode" @preview-mode-change="greet" />
         </div>
         <div class="layout-runner-content-wrapper tiny-scrollbar">
             <div class="layout-runner-content-header">
                 <div class="layout-runner-content-navigator"></div>
-                <div class="layout-runner-content-title">Ningzhi Vbuilder</div>
+                <div class="layout-runner-content-title">Ningzhi vBuilder</div>
             </div>
-            <div class="layout-runner-content"></div>
+            <div class="layout-runner-content">
+                <BlocksRenderer />
+            </div>
         </div>
     </div>
 </template>

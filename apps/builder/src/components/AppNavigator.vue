@@ -70,7 +70,7 @@ const Icon = defineComponent({
                     src="https://functions.prod.internal.glideapps.com/getEmoji/%E2%9C%88%EF%B8%8F"
                 />
             </div>
-            <h1 class="app-name">Ningzhi Vbuilder {{ msg ? msg : '' }}</h1>
+            <h1 class="app-name">Ningzhi vBuilder {{ msg ? msg : '' }}</h1>
         </div>
         <div class="app-navigator-link-wrapper">
             <RouterLink

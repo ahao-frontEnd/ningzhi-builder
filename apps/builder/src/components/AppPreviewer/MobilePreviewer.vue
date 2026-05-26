@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import BlocksRenderer from '@/blocks/BlocksRenderer.vue'
+
 import PreviewModeSwitcher from './PreviewModeSwitcher.vue'
 import StatusBar from './StatusBar.vue'
 import type { PreviewType } from './type'
@@ -24,10 +26,12 @@ function greet(mode: PreviewType) {
             <div class="simulator-header">
                 <StatusBar />
                 <div class="simulator-navigator-wrapper">
-                    <div class="simulator-navigator">Ningzhi Vbuilder</div>
+                    <div class="simulator-navigator">Ningzhi vBuilder</div>
                 </div>
             </div>
-            <div class="simulator"></div>
+            <div class="simulator">
+                <BlocksRenderer />
+            </div>
         </div>
     </div>
 </template>
