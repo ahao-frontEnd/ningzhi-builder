@@ -1,7 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import NotesEditor from '@/components/NotesEditor/NotesEditor.vue'
+</script>
 
 <template>
-    <div class="notes">notes block</div>
+    <div class="notes">
+        <NotesEditor />
+    </div>
 </template>
 
 <style scoped>
