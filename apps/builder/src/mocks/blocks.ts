@@ -20,18 +20,18 @@ export const blocks: BlockInfo[] = [
     },
     {
         id: '3',
-        type: 'image',
-        label: 'Image',
-        props: {
-            url: 'https://images.pexels.com/photos/17108884/pexels-photo-17108884.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load'
-        }
-    },
-    {
-        id: '4',
         type: 'chart',
         label: 'Charts',
         props: {
             chartType: 'echarts'
+        }
+    },
+    {
+        id: '4',
+        type: 'image',
+        label: 'Image',
+        props: {
+            url: 'https://images.pexels.com/photos/17108884/pexels-photo-17108884.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load'
         }
     },
     {

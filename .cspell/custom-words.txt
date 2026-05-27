@@ -1,8 +1,11 @@
 avantgo
 bada
 commitlint
+curveness
+Echarts
 eslintcache
 meego
+miserables
 ningzhi
 njsproj
 ntvs
@@ -14,3 +17,4 @@ viewports
 Vite
 vitepress
 Vitest
+zrender
