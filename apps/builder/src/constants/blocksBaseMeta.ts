@@ -13,7 +13,13 @@ import { nanoid } from 'nanoid'
 
 import type { BlockInfo, BlockType } from '@/types/block'
 
-export const blocksBaseMetaList: { type: BlockType; label: string; icon: Icon }[] = [
+type BlockBaseMeta = {
+    type: BlockType
+    label: string
+    icon: Icon
+}
+
+export const blocksBaseMetaList: BlockBaseMeta[] = [
     {
         type: 'quote',
         label: 'Quote',

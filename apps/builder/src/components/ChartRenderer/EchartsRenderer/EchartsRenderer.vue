@@ -11,9 +11,12 @@ import {
     ToolboxComponent,
     TooltipComponent
 } from 'echarts/components'
-import { init, use } from 'echarts/core'
+import { type EChartsType, init, use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
+import type { ECBasicOption } from 'echarts/types/dist/shared'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+
+import { MOCK_DATA } from './MOCK_DATA'
 
 use([
     CanvasRenderer,
@@ -27,64 +30,62 @@ use([
 
 const chartContainer = ref<HTMLDivElement | null>(null)
 
-const chartInstance = ref()
+const chartInstance = ref<EChartsType>()
 
 const resizeHandler = () => {
     chartInstance.value?.resize()
 }
 
 const fetchChartData = () => {
-    fetch('/charts/examples/data/asset/data/les-miserables.json')
-        .then((res) => res.json())
-        .then((graph) => {
-            graph.nodes.forEach(function (node: any) {
-                node.label = {
-                    show: node.symbolSize > 30
-                }
-            })
-            const options = {
-                title: {
-                    text: 'Ningzhi',
-                    subtext: 'Circular layout',
-                    top: 'bottom',
-                    left: 'right'
-                },
-                tooltip: {},
-                legend: [
-                    {
-                        data: graph.categories.map(function (a: any) {
-                            return a.name
-                        })
-                    }
-                ],
-                animationDurationUpdate: 1500,
-                animationEasingUpdate: 'quinticInOut',
-                series: [
-                    {
-                        name: 'Ningzhi',
-                        type: 'graph',
-                        layout: 'circular',
-                        circular: {
-                            rotateLabel: true
-                        },
-                        data: graph.nodes,
-                        links: graph.links,
-                        categories: graph.categories,
-                        roam: true,
-                        label: {
-                            position: 'right',
-                            formatter: '{b}'
-                        },
-                        lineStyle: {
-                            color: 'source',
-                            curveness: 0.3
-                        }
-                    }
-                ]
+    // fetch data from server
+    const graph = MOCK_DATA
+    graph.nodes.forEach(function (node: any) {
+        node.label = {
+            show: node.symbolSize > 30
+        }
+    })
+    const options: ECBasicOption = {
+        title: {
+            text: 'Ningzhi',
+            subtext: 'Ningzhi_subtext',
+            top: 'top',
+            left: 'left'
+        },
+        tooltip: {},
+        legend: [
+            {
+                data: graph.categories.map(function (a: any) {
+                    return a.name
+                })
             }
+        ],
+        animationDurationUpdate: 1500,
+        animationEasingUpdate: 'quinticInOut',
+        series: [
+            {
+                name: 'Ningzhi',
+                type: 'graph',
+                layout: 'circular',
+                circular: {
+                    rotateLabel: true
+                },
+                data: graph.nodes,
+                links: graph.links,
+                categories: graph.categories,
+                roam: false,
+                label: {
+                    position: 'right',
+                    formatter: '{b}'
+                },
+                lineStyle: {
+                    color: 'source',
+                    curveness: 0.3
+                }
+            }
+        ]
+    }
 
-            chartInstance.value.setOption(options)
-        })
+    chartInstance.value?.setOption(options)
 }
 
 onMounted(() => {

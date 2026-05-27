@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ApplicationMenu, DataSheet, Lightning, Page, Share } from '@icon-park/vue-next'
+import { ApplicationMenu, DataSheet, FriendsCircle, Lightning, Page } from '@icon-park/vue-next'
 import { computed, defineComponent, h } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -99,7 +99,7 @@ const Icon = defineComponent({
         </div>
         <div class="app-setting-wrapper">
             <div class="common-btn">
-                <Share />
+                <FriendsCircle size="16" />
                 发布
             </div>
         </div>

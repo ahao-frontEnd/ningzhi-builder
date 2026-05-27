@@ -40,6 +40,7 @@ function greet(mode: PreviewType) {
     display: flex;
     flex-direction: column;
     flex: 1;
+    height: 98%;
     overflow: hidden;
     margin: 8px 40px;
     background-color: var(--color-white);

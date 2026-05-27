@@ -19,6 +19,7 @@
         "**/language.ts",
         "**/package.json",
         "eslint.config.js",
-        "apps/builder/src/utils/detect.ts"
+        "apps/builder/src/utils/detect.ts",
+        "**/MOCK_DATA.ts"
     ]
 }
