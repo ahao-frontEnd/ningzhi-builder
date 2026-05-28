@@ -1,10 +1,14 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { ImageBlockInfo } from '@/types/block'
+
+const props = defineProps<{
+    blockInfo: ImageBlockInfo
+}>()
+</script>
 
 <template>
     <div class="image">
-        <img
-            src="https://images.pexels.com/photos/17108884/pexels-photo-17108884.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load"
-        />
+        <img :src="props.blockInfo.props.url" />
     </div>
 </template>
 

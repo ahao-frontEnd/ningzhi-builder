@@ -24,10 +24,15 @@ export const useAppEditorStore = defineStore('appEditor', () => {
         }
     }
 
+    function unSelectBlock() {
+        currentBlockId.value = null
+    }
+
     return {
         currentBlockId,
         blocks,
         selectBlock,
+        unSelectBlock,
         updateBlocks,
         updateBlock
     }

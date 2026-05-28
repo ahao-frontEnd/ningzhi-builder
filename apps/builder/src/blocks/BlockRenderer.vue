@@ -75,7 +75,6 @@ const editable = inject('editable', true)
     height: 100%;
     left: 0;
     top: 0;
-    border-radius: 8px;
     pointer-events: none;
     user-select: none;
 }

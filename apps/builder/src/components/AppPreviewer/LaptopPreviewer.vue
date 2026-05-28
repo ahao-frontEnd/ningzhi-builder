@@ -108,7 +108,7 @@ function greet(mode: PreviewType) {
     display: flex;
     align-items: center;
     padding: 0 90px;
-    height: 90px;
+    height: 56px;
     font-size: 24px;
     font-weight: var(--font-weight-bolder);
     color: var(--color-white);

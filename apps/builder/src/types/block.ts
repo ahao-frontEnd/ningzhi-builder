@@ -1,8 +1,3 @@
-/* 
-    物料协议定义，包含基础物料和外部物料两大类，基础物料由平台提供，扩展物料由第三方提供。
-    物料协议定义了物料的基本信息和属性，平台根据协议渲染物料，并提供相应的编辑功能。
-*/
-
 export type BasicBlockType = 'heroTitle' | 'view' | 'chart' | 'quote' | 'image'
 export type ExternalBlockType = 'button' | 'form' | 'notes'
 
@@ -13,13 +8,17 @@ export interface BaseBlockInfo {
     label: string
 }
 
-// 基础物料信息
+export type HeroTitleBlockAlign = 'left' | 'center' | 'right'
+
 export interface HeroTitleBlockInfo extends BaseBlockInfo {
     type: 'heroTitle'
     props: {
+        align: HeroTitleBlockAlign
         content: string
+        description?: string[]
     }
 }
+
 export interface ViewBlockInfo extends BaseBlockInfo {
     type: 'view'
     props: {
@@ -36,14 +35,18 @@ export interface ViewBlockInfo extends BaseBlockInfo {
         data: { id: string; value: string }[]
     }
 }
-export type QuoteBlockStatus = 'success' | 'warning' | 'error'
+
+export const QuoteBlockStatus = ['success', 'warning', 'error'] as const
+export type QuoteBlockStatusType = (typeof QuoteBlockStatus)[number]
+
 export interface QuoteBlockInfo extends BaseBlockInfo {
     type: 'quote'
     props: {
         content: string
-        status: QuoteBlockStatus
+        status: QuoteBlockStatusType
     }
 }
+
 export interface ImageBlockInfo extends BaseBlockInfo {
     type: 'image'
     props: {
@@ -51,7 +54,7 @@ export interface ImageBlockInfo extends BaseBlockInfo {
     }
 }
 
-// 外部物料信息
+// external
 export interface ButtonBlockInfo extends BaseBlockInfo {
     type: 'button'
     props: {
