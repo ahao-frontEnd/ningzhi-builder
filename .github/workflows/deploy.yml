@@ -1,0 +1,127 @@
+name: Deploy Builder
+
+on:
+    push:
+        branches: [main]
+        paths:
+            - 'apps/builder/**'
+            - 'packages/**'
+            - 'pnpm-lock.yaml'
+            - 'pnpm-workspace.yaml'
+            - 'package.json'
+    workflow_dispatch:
+        inputs:
+            environment:
+                description: '部署环境'
+                required: true
+                default: 'production'
+                type: choice
+                options:
+                    - production
+                    - staging
+
+permissions:
+    contents: read
+
+concurrency:
+    group: deploy-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    APP_NAME: n-builder
+    DIST_DIR: apps/builder/dist
+    REMOTE_DIST: /home/ubuntu/builder-dist
+
+jobs:
+    build:
+        name: 构建前端
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout 代码
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: 'pnpm'
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 9
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Type check & build
+              run: pnpm --filter ${{ env.APP_NAME }} build
+
+            - name: Upload build artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: builder-dist
+                  path: ${{ env.DIST_DIR }}
+                  retention-days: 1
+                  if-no-files-found: error
+
+    deploy:
+        name: 部署到服务器
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+            name: production
+            url: https://builder.ningzhi2.site
+        steps:
+            - name: Download build artifact
+              uses: actions/download-artifact@v4
+              with:
+                  name: builder-dist
+                  path: dist
+
+            - name: 同步产物到服务器
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.SERVER_HOST }}
+                  username: ${{ secrets.SERVER_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  port: ${{ secrets.SSH_PORT || 22 }}
+                  source: 'dist/*'
+                  target: ${{ env.REMOTE_DIST }}
+                  overwrite: true
+                  rm: true
+
+            - name: 重载 Caddy 并验证
+              uses: appleboy/ssh-action@v1.2.0
+              with:
+                  host: ${{ secrets.SERVER_HOST }}
+                  username: ${{ secrets.SERVER_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  port: ${{ secrets.SSH_PORT || 22 }}
+                  script: |
+                      # 找到现有 Caddy 容器名
+                      CADDY_CID=$(docker ps --filter ancestor=caddy -q | head -1)
+                      if [ -z "$CADDY_CID" ]; then
+                        echo "❌ 未找到运行中的 Caddy 容器"
+                        exit 1
+                      fi
+                      echo "Caddy 容器 ID: $CADDY_CID"
+
+                      # 重载 Caddy 配置（零停机）
+                      docker exec "$CADDY_CID" caddy reload --config /etc/caddy/Caddyfile
+                      if [ $? -ne 0 ]; then
+                        echo "❌ Caddy 重载失败"
+                        docker logs "$CADDY_CID" --tail 20
+                        exit 1
+                      fi
+                      echo "✅ Caddy 重载成功"
+
+                      # 健康检查
+                      sleep 3
+                      HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://builder.ningzhi2.site)
+                      echo "HTTPS 响应码: $HTTP_CODE"
+                      if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "308" ]; then
+                        echo "⚠️  健康检查异常，但部署已完成"
+                      else
+                        echo "✅ 部署成功！"
+                      fi

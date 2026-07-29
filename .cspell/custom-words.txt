@@ -1,9 +1,12 @@
+appleboy
 avantgo
 bada
+Caddyfile
 commitlint
 curveness
 Echarts
 eslintcache
+healthcheck
 meego
 miserables
 ningzhi
@@ -18,3 +21,4 @@ Vite
 vitepress
 Vitest
 zrender
+zstd
