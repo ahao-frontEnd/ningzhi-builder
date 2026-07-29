@@ -2,6 +2,6 @@
 
 <template>
     <div class="data-source-view">
-        <h2>Data Source View</h2>
+        <h2>Data Source View test cicd</h2>
     </div>
 </template>

@@ -2,6 +2,7 @@ appleboy
 avantgo
 bada
 Caddyfile
+cicd
 commitlint
 curveness
 Echarts

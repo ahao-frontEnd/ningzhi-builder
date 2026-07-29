@@ -3,12 +3,6 @@ name: Deploy Builder
 on:
     push:
         branches: [main]
-        paths:
-            - 'apps/builder/**'
-            - 'packages/**'
-            - 'pnpm-lock.yaml'
-            - 'pnpm-workspace.yaml'
-            - 'package.json'
     workflow_dispatch:
         inputs:
             environment:
