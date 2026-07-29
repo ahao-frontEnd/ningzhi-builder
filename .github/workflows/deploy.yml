@@ -85,19 +85,25 @@ jobs:
                   name: builder-dist
                   path: dist
 
-            - name: 同步产物到服务器
+            - name: 打包产物为 tar
+              run: |
+                  mkdir -p /tmp/deploy
+                  tar czf /tmp/deploy/builder-dist.tar.gz -C dist .
+                  echo "打包完成，文件列表："
+                  tar tzf /tmp/deploy/builder-dist.tar.gz | head -10
+
+            - name: 同步 tar 到服务器
               uses: appleboy/scp-action@v0.1.7
               with:
                   host: ${{ secrets.SERVER_HOST }}
                   username: ${{ secrets.SERVER_USER }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   port: ${{ secrets.SSH_PORT || 22 }}
-                  source: 'dist/*'
-                  target: ${{ env.REMOTE_DIST }}
+                  source: '/tmp/deploy/builder-dist.tar.gz'
+                  target: '/tmp/deploy'
                   overwrite: true
-                  rm: true
 
-            - name: 重载 Caddy 并验证
+            - name: 解压部署 + 重载 Caddy + 健康检查
               uses: appleboy/ssh-action@v1.2.0
               with:
                   host: ${{ secrets.SERVER_HOST }}
@@ -105,29 +111,49 @@ jobs:
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   port: ${{ secrets.SSH_PORT || 22 }}
                   script: |
-                      # 找到现有 Caddy 容器名
+                      set -e
+
+                      # 1. 清空目标目录内容（保留目录本身）
+                      echo "清理旧产物..."
+                      find ${{ env.REMOTE_DIST }} -mindepth 1 -delete 2>/dev/null || true
+
+                      # 2. 解压新产物（. 表示 dist 目录内容本身，不含 dist 层级）
+                      echo "解压新产物到 ${{ env.REMOTE_DIST }}..."
+                      tar xzf /tmp/deploy/builder-dist.tar.gz -C ${{ env.REMOTE_DIST }}
+                      rm -f /tmp/deploy/builder-dist.tar.gz
+
+                      # 3. 验证文件是否就位
+                      echo "文件清单："
+                      ls -la ${{ env.REMOTE_DIST }} | head -10
+                      if [ ! -f "${{ env.REMOTE_DIST }}/index.html" ]; then
+                        echo "❌ index.html 不存在！"
+                        exit 1
+                      fi
+
+                      # 4. 找到现有 Caddy 容器并重载
                       CADDY_CID=$(docker ps --filter ancestor=caddy -q | head -1)
                       if [ -z "$CADDY_CID" ]; then
                         echo "❌ 未找到运行中的 Caddy 容器"
                         exit 1
                       fi
-                      echo "Caddy 容器 ID: $CADDY_CID"
+                      echo "Caddy 容器: $CADDY_CID"
 
-                      # 重载 Caddy 配置（零停机）
+                      # 5. 验证容器内挂载
+                      echo "容器内 builder 目录："
+                      docker exec "$CADDY_CID" ls -la /app/frontend/builder/dist/ 2>&1 | head -5
+
+                      # 6. 重载 Caddy（零停机）
                       docker exec "$CADDY_CID" caddy reload --config /etc/caddy/Caddyfile
-                      if [ $? -ne 0 ]; then
-                        echo "❌ Caddy 重载失败"
-                        docker logs "$CADDY_CID" --tail 20
-                        exit 1
-                      fi
                       echo "✅ Caddy 重载成功"
 
-                      # 健康检查
-                      sleep 3
-                      HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://builder.ningzhi2.site)
-                      echo "HTTPS 响应码: $HTTP_CODE"
+                      # 7. 健康检查
+                      sleep 2
+                      HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/ -H "Host: builder.ningzhi2.site")
+                      echo "HTTP 响应码: $HTTP_CODE"
                       if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "308" ]; then
-                        echo "⚠️  健康检查异常，但部署已完成"
+                        echo "⚠️  本地访问异常，尝试 HTTPS..."
+                        HTTP_CODE2=$(curl -sk -o /dev/null -w "%{http_code}" https://builder.ningzhi2.site)
+                        echo "HTTPS 响应码: $HTTP_CODE2"
                       else
                         echo "✅ 部署成功！"
                       fi
